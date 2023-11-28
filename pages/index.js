@@ -3,11 +3,13 @@ import { Inter } from "next/font/google";
 import axios from "axios";
 const inter = Inter({ subsets: ["latin"] });
 import { useEffect, useRef, useState } from "react";
+import Chat from "./Components/Chat";
 
 export default function Home() {
 	const audioRef = useRef(null);
-	const [transcription, setTranscription] = useState("");
+	const [textFormMe, setTextFromMe] = useState("");
 	const [isListening, setIsListening] = useState(false);
+	const [textFromAi, setTextFromAi] = useState();
 	const [conversation, setConversation] = useState([]);
 	const startListening = () => {
 		let recognition;
@@ -26,6 +28,11 @@ export default function Home() {
 
 			if (event.results[0].isFinal) {
 				console.log("Got Final Result:", transcript);
+
+				setConversation((prev) => [
+					...prev,
+					{ text: transcript, role: "user" },
+				]);
 				transcript !== "" ? handleReply(transcript) : startListening();
 				// setConversation((prev) => [...prev, transcript]);
 				// handleReply(transcript);
@@ -98,6 +105,10 @@ export default function Home() {
 			.then((response) => {
 				console.log("response", response);
 				handleFetchAudio(response.data.google.generated_text);
+				setConversation((prev) => [
+					...prev,
+					{ text: response.data.google.generated_text, role: "bot" },
+				]);
 				console.log("response", response.data.google.generated_text);
 			})
 			.catch((err) => {
@@ -108,16 +119,30 @@ export default function Home() {
 
 	return (
 		<div>
-			<div>
-				<button
-					onClick={() =>
-						handleFetchAudio(
-							"Hello , I am Julie , I am your speeking partner for now"
-						)
-					}>
-					Start speeking.....
-				</button>
+			<div className="grid columns-2 grid-flow-col">
+				<section className="bg-blue-300 h-screen">
+					<div>
+						<button
+							onClick={() =>
+								handleFetchAudio(
+									"Hello , I am Julie , I am your speeking partner for now"
+								)
+							}>
+							Start speeking.....
+						</button>
+					</div>
+					{/* <img src={"https://picsum.photos/200"} alt="Logo" border="0" /> */}
+				</section>
+				<section className="h-screen flex items-center justify-center">
+					<div className="bg-slate-200 h-3/4 my-10 w-3/5 shadow-sm shadow-cyan-400 rounded-md overflow-y-auto">
+						{conversation &&
+							conversation.map((item, index) => (
+								<Chat key={index} text={item.text} role={item.role} />
+							))}
+					</div>
+				</section>
 			</div>
+
 			<audio
 				ref={audioRef}
 				id="audioPlayer"
