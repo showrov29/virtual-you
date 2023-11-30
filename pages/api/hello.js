@@ -2,9 +2,18 @@
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import fs from "fs";
 export default async function handler(req, res) {
+	// let text = "";
+	// if (
+	// 	req.body.text === undefined ||
+	// 	req.body.text === "" ||
+	// 	req.body.text === "\n" ||
+	// 	req.body.text.length <= 2
+	// ) {
+	// 	text = "There is no reply from the bot as it is under development";
+	// }
 	let name = new Date().toString();
 	let x = `./public/${name}.mp3`;
-	let flag = await synthesizeSpeech(req.body.text, x);
+	let flag = await synthesizeSpeech(`${req.body.text}....`, x);
 	if (flag) {
 		res.status(201).json({
 			audioFile: `${name}.mp3`,

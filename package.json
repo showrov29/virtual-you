@@ -11,7 +11,9 @@
   "dependencies": {
     "api": "^6.1.1",
     "axios": "^1.6.2",
+    "gsap": "^3.12.3",
     "microsoft-cognitiveservices-speech-sdk": "^1.33.1",
+    "moments": "^0.0.2",
     "next": "14.0.3",
     "react": "^18",
     "react-dom": "^18",
@@ -19,7 +21,9 @@
     "use-sound": "^4.0.1"
   },
   "devDependencies": {
+    "@iconify/react": "^4.1.1",
     "autoprefixer": "^10.0.1",
+    "daisyui": "^4.4.14",
     "eslint": "^8",
     "eslint-config-next": "14.0.3",
     "postcss": "^8",
