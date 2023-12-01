@@ -11,6 +11,7 @@
   "dependencies": {
     "api": "^6.1.1",
     "axios": "^1.6.2",
+    "cors": "^2.8.5",
     "gsap": "^3.12.3",
     "microsoft-cognitiveservices-speech-sdk": "^1.33.1",
     "moments": "^0.0.2",
