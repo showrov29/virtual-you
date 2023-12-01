@@ -1,7 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import fs from "fs";
-import Cors from "cors";
 
 export default async function handler(req, res) {
 	// let text = "";
