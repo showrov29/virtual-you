@@ -10,13 +10,11 @@ export default function Home() {
 	const audioRef = useRef(null);
 	const [textFormMe, setTextFromMe] = useState("");
 	const [isListening, setIsListening] = useState(false);
-	const [textFromAi, setTextFromAi] = useState();
+	const [isPreparingReply, setIsPreaparingReply] = useState(false);
 	const [isSpeaking, setIsSpeaking] = useState(false);
 	const [conversation, setConversation] = useState([]);
 	const startListening = () => {
 		let recognition;
-		let recognitionTimeout;
-
 		recognition = new window.webkitSpeechRecognition();
 		recognition.lang = "en-US";
 		recognition.interimResults = true;
@@ -24,8 +22,6 @@ export default function Home() {
 		recognition.onstart = () => {
 			setIsListening(true);
 			console.log("Speech recognition service has started");
-			// Clear any existing timeout when recognition starts
-			// clearTimeout(recognitionTimeout);
 		};
 
 		recognition.onresult = (event) => {
@@ -41,16 +37,16 @@ export default function Home() {
 				]);
 				transcript !== "" ? handleReply(transcript) : startListening();
 
-				// Reset the timeout only when there's a result
-				// clearTimeout(recognitionTimeout);
-				// recognitionTimeout = setTimeout(() => {
-				// 	recognition.stop();
-				// }, 5000); // Set the timeout duration (in milliseconds) as needed
+				// setConversation((prev) => [...prev, transcript]);
+				// handleReply(transcript);
 			}
+
+			// console.log("Full Conversation:", fullConversation.join(" "));
 		};
 
 		recognition.onend = () => {
 			setIsListening(false);
+
 			console.log("Speech recognition ended.");
 		};
 
@@ -76,7 +72,7 @@ export default function Home() {
 
 				// Update the audio element source
 				await updateAudioSource(newAudioFile);
-
+				setIsPreaparingReply(false);
 				// Play the audio
 				await playAudio();
 			});
@@ -88,21 +84,29 @@ export default function Home() {
 	};
 
 	const playAudio = () => {
-		console.log(
-			"🚀 ~ file: index.js:38 ~ playAudio ~ audioRef:",
-			audioRef.current
-		);
-		if (audioRef.current) {
-			audioRef.current.addEventListener("canplay", () => {
+		audioRef.current.addEventListener("loadedmetadata", () => {
+			console.log("audioRef duration", audioRef.current.duration);
+			if (audioRef.current.duration > 0) {
 				audioRef.current.play();
-			});
-		} else {
-			console.log("audio can not be played");
-		}
+				setIsSpeaking(true);
+			} else {
+				startListening();
+			}
+		});
+		// if (audioRef.current) {
+		// 	audioRef.current.addEventListener("canplay", () => {
+		// 		audioRef.current.play();
+		// 		setIsSpeaking(true);
+		// 	});
+		// } else {
+		// 	console.log("audio can not be played");
+		// }
 	};
 
 	const handleReply = async (message) => {
 		//
+
+		setIsPreaparingReply(true);
 		await axios
 			.post(
 				"https://api.edenai.run/v2/text/chat",
@@ -119,6 +123,7 @@ export default function Home() {
 				if (
 					response.data.google.generated_text === "" ||
 					response.data.google.generated_text === "\n" ||
+					response.data.google.generated_text === " \n" ||
 					response.data.google.generated_text === " \r\n" ||
 					response.data.google.generated_text === "\r\n"
 				) {
@@ -140,11 +145,11 @@ export default function Home() {
 	const el = useRef(null);
 	useEffect(() => {
 		const typed = new Typed(el.current, {
-			strings: ["Click on the button to start the conversation"],
+			strings: ["Click here to start or restart the conversation"],
 			loop: true,
 			backSpeed: 50,
 			backDelay: 2000,
-			typeSpeed: 50,
+			typeSpeed: 80,
 			startDelay: 1000,
 		});
 		return () => {
@@ -167,8 +172,13 @@ export default function Home() {
 			<div className="flex flex-row items-center justify-between px-36">
 				<section className="h-screen w-1/2 pt-10">
 					<div>
+						<h1 className="text-4xl font-bold mb-2 text-purple-600">
+							{(isListening && "Listning...") ||
+								(isSpeaking && "Speaking...") ||
+								(isPreparingReply && "Preparing Reply...")}
+						</h1>
 						<button
-							className=" bg-purple-600 w-48 text-white font-bold py-2 px-4 rounded-full"
+							className=" bg-purple-600 w-48 h-24 text-white font-bold py-2 px-4 rounded-full"
 							onClick={() =>
 								handleFetchAudio(
 									"Hello , I am Julie , I am your speeking partner for now"
@@ -176,6 +186,17 @@ export default function Home() {
 							}>
 							<span ref={el} />
 						</button>
+
+						<div className="mt-10">
+							<p className=" font-base text-xl">
+								<h1 className="font-bold text-2xl text-purple-600 mb-3">
+									Note:
+								</h1>
+								This is still under development and using free api and free
+								resources. If it get stuck try to restart it by clicking the
+								<b className="text-red-500"> Restart /Start </b> button
+							</p>
+						</div>
 					</div>
 					{/* <img src={"https://picsum.photos/200"} alt="Logo" border="0" /> */}
 				</section>
@@ -204,19 +225,18 @@ export default function Home() {
 				ref={audioRef}
 				id="audioPlayer"
 				onEnded={() => {
-					audioRef.current &&
-						audioRef.current.src !== "output.mp3" &&
-						axios
-							.post("http://localhost:3000/api/delete", {
-								name: audioRef.current.src.split("/")[3].split(".")[0] + ".mp3",
-							})
-							.then((response) => {
-								console.log("response", response.data);
-							})
-							.catch((error) => {
-								console.log("error", error);
-							});
-
+					console.log(audioRef.current.src);
+					axios
+						.post("http://localhost:3000/api/delete", {
+							name: audioRef.current.src.split("/")[3].split(".")[0] + ".mp3",
+						})
+						.then((response) => {
+							console.log("response", response.data);
+						})
+						.catch((error) => {
+							console.log("error", error);
+						});
+					setIsSpeaking(false);
 					startListening();
 				}}
 				// controls
