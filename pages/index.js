@@ -194,7 +194,7 @@ export default function Home() {
 								</h1>
 								This is still under development and using free api and free
 								resources. If it get stuck try to restart it by clicking the
-								<b className="text-red-500"> Restart /Start </b> button
+								Start button
 							</p>
 						</div>
 					</div>
