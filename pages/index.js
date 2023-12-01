@@ -61,7 +61,7 @@ export default function Home() {
 	const handleFetchAudio = async (reply) => {
 		console.log("🚀 ~ file: index.js:14 ~ handleFetchAudio ~ reply:", reply);
 		await axios
-			.post("http://localhost:3000/api/hello", {
+			.post("https://virtual-you.vercel.app/api/hello", {
 				text: reply,
 			})
 			.then(async (response) => {
@@ -227,7 +227,7 @@ export default function Home() {
 				onEnded={() => {
 					console.log(audioRef.current.src);
 					axios
-						.post("http://localhost:3000/api/delete", {
+						.post("https://virtual-you.vercel.app/api/delete", {
 							name: audioRef.current.src.split("/")[3].split(".")[0] + ".mp3",
 						})
 						.then((response) => {
