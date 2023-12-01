@@ -3,15 +3,17 @@ import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import fs from "fs";
 
 export default async function handler(req, res) {
-	// let text = "";
-	// if (
-	// 	req.body.text === undefined ||
-	// 	req.body.text === "" ||
-	// 	req.body.text === "\n" ||
-	// 	req.body.text.length <= 2
-	// ) {
-	// 	text = "There is no reply from the bot as it is under development";
-	// }
+	// Enable CORS for all routes
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+	res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+	if (req.method === "OPTIONS") {
+		// Preflight request response
+		res.status(200).end();
+		return;
+	}
+
 	let name = new Date().toString();
 	let x = `./public/${name}.mp3`;
 	let flag = await synthesizeSpeech(`${req.body.text}....`, x);
@@ -64,16 +66,3 @@ async function synthesizeSpeech(text, audioFile) {
 		console.log("Now synthesizing to: " + audioFile);
 	});
 }
-
-// Example usage:
-// (async () => {
-// 	try {
-// 		const synthesisResult = await synthesizeSpeech(
-// 			"Hello, world!",
-// 			"output.wav"
-// 		);
-// 		console.log("Synthesis Result:", synthesisResult);
-// 	} catch (error) {
-// 		console.error("Error during synthesis:", error);
-// 	}
-// })();
