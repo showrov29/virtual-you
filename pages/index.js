@@ -61,7 +61,7 @@ export default function Home() {
 	const handleFetchAudio = async (reply) => {
 		console.log("🚀 ~ file: index.js:14 ~ handleFetchAudio ~ reply:", reply);
 		await axios
-			.post("https://virtual-you.vercel.app/api/hello", {
+			.post("https://virtual-4fr0c59fb-atifahmed29.vercel.app/api/hello", {
 				text: reply,
 			})
 			.then(async (response) => {
@@ -188,14 +188,10 @@ export default function Home() {
 						</button>
 
 						<div className="mt-10">
-							<p className=" font-base text-xl">
-								<h1 className="font-bold text-2xl text-purple-600 mb-3">
-									Note:
-								</h1>
-								This is still under development and using free api and free
-								resources. If it get stuck try to restart it by clicking the
-								Start button
-							</p>
+							<h1 className="font-bold text-2xl text-purple-600 mb-3">Note:</h1>
+							This is still under development and using free api and free
+							resources. If it get stuck try to restart it by clicking the Start
+							button
 						</div>
 					</div>
 					{/* <img src={"https://picsum.photos/200"} alt="Logo" border="0" /> */}
@@ -227,9 +223,12 @@ export default function Home() {
 				onEnded={() => {
 					console.log(audioRef.current.src);
 					axios
-						.post("https://virtual-you.vercel.app/api/delete", {
-							name: audioRef.current.src.split("/")[3].split(".")[0] + ".mp3",
-						})
+						.post(
+							"https://virtual-4fr0c59fb-atifahmed29.vercel.app/api/delete",
+							{
+								name: audioRef.current.src.split("/")[3].split(".")[0] + ".mp3",
+							}
+						)
 						.then((response) => {
 							console.log("response", response.data);
 						})
